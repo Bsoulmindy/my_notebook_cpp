@@ -29,6 +29,10 @@ auto send_request()
         bool await_suspend(std::coroutine_handle<> h)
         {
             p.wait();
+            // return true; // This will give the control back to the main() method, which will simply destroy everything
+
+            // This will give the control back to the coroutine, which will execute await_resume() to get the final result
+            // then continuing it's logic
             return false;
         }
 
@@ -45,9 +49,9 @@ auto send_request()
 
     std::future<std::string> p = std::async([]()
                                             {
-        std::cout << "Sending Request, waiting for response" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-        return std::string("Hello world!"); });
+            std::cout << "Sending Request, waiting for response" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(3));
+            return std::string("Hello world!"); });
     return awaitable{std::move(p)};
 }
 
