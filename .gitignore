@@ -5,3 +5,5 @@
 # All folders and all files with extension are accepted
 # Only files without extension are ignored
 /.vscode
+cmake/
+build/

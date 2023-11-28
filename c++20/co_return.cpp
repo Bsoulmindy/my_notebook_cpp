@@ -3,7 +3,7 @@
 #if defined(__cpp_impl_coroutine)
 #include <coroutine>
 
-template <class T>
+template <typename T>
 struct task
 {
     // Declaring coroutine handler with the name "handle_type"

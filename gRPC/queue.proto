@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package TicketSystem;
+
+service Office {
+    rpc Reserve(Request) returns (Response) {} 
+}
+
+message Request {
+    string name = 1;
+}
+
+message Response {
+    string name = 1;
+    int32 id = 2;
+}
