@@ -1,6 +1,8 @@
 #include <iostream>
 #include "request.pb.h"
 #include <boost/asio.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using boost::asio::ip::tcp;
 
@@ -22,7 +24,7 @@ int main()
         Request request;
         request.set_operation("update");
         request.set_quantity(number);
-        std::cout << "Sending request to the server" << std::endl;
+        spdlog::info("Sending request to the server");
 
         boost::system::error_code error;
         std::string buf = request.SerializeAsString();
@@ -30,7 +32,7 @@ int main()
 
         if (error)
         {
-            std::cout << "Failed to send request to the server : " << error << std::endl;
+            spdlog::error("Failed to send request to the server : {}", error.message());
         }
     }
 }

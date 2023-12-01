@@ -3,6 +3,8 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <boost/array.hpp>
+#include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 using boost::asio::ip::tcp;
 
@@ -11,10 +13,10 @@ int main(int argc, char *argv[])
     boost::asio::io_context io_context;
     tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 8083));
     tcp::socket socket(io_context);
-    std::cout << "Starting listening for incoming connections..." << std::endl;
+    spdlog::info("Starting listening for incoming connections...");
     acceptor.accept(socket);
 
-    std::cout << "Client connected : " << socket.remote_endpoint().address() << std::endl;
+    spdlog::info("Client connected : {}", socket.remote_endpoint().address().to_string());
     int quantity = 0;
     while (true)
     {
@@ -25,37 +27,34 @@ int main(int argc, char *argv[])
 
         if (error == boost::asio::error::eof)
         {
-            std::cout << "Client disconnected" << std::endl;
+            spdlog::error("Client disconnected");
             break;
         }
         else if (error)
             throw boost::system::system_error(error);
         else if (len == 0)
         {
-            std::cout << "Error occured when listening for packets" << std::endl;
+            spdlog::error("Error occured when listening for packets");
             return -1;
         }
 
         if (!request.ParseFromArray(buf.elems, len))
         {
-            std::cout << "Error : Failed to get a valid Request from the client" << std::endl;
+            spdlog::error("Error : Failed to get a valid Request from the client");
             return -1;
         }
 
         if (request.operation() == "update")
         {
             quantity += request.quantity();
-            std::cout << "Changing current quantity to "
-                      << quantity
-                      << "("
-                      << (request.quantity() >= 0 ? "+" : "")
-                      << request.quantity()
-                      << ")"
-                      << std::endl;
+            spdlog::info("Changing current quantity to {} ({}{})",
+                         quantity,
+                         request.quantity() >= 0 ? "+" : "",
+                         request.quantity());
         }
         else
         {
-            std::cout << "Invalid operation : " << request.operation() << std::endl;
+            spdlog::error("Invalid operation : {}", request.operation());
         }
     }
 
